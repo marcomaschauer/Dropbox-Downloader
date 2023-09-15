@@ -31,7 +31,9 @@ def extract_filename_from_link(link):
     filename = filename.split('?')[0]
     return filename
 
-def download_from_dropbox(link, base_directory):
+def download_from_dropbox(link, base_directory, current, total):
+    print(f"\n[{current}/{total}] Downloading {link}...")
+
     internal_filename = extract_filename_from_link(link)
     zip_filename = f"{internal_filename}.zip"
     zip_path = os.path.join(base_directory, zip_filename)
@@ -51,7 +53,10 @@ def download_from_dropbox(link, base_directory):
             for chunk in response.iter_content(chunk_size=8192):
                 f_in_zip.write(chunk)
 
-    print(f"File from {link} downloaded and saved in ZIP archive: {zip_path}.")
+    # Print progress bar
+    progress = int((current / total) * 50)
+    bar = ['=' * progress, ' ' * (50 - progress)]
+    print(f"[{bar[0]}{bar[1]}] {current}/{total} downloads complete.")
 
 if __name__ == "__main__":
     links = input("Enter the Dropbox links separated by spaces: ").split()
@@ -68,6 +73,7 @@ if __name__ == "__main__":
         print(f"Invalid directory: {base_directory}")
         exit(1)
 
-    for link in links:
+    total_links = len(links)
+    for idx, link in enumerate(links, 1):
         link = link.strip()
-        download_from_dropbox(link, base_directory)
+        download_from_dropbox(link, base_directory, idx, total_links)
