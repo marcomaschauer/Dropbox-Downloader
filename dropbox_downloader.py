@@ -48,7 +48,8 @@ def download_from_dropbox(link, base_directory, current, total):
     response = requests.get(direct_link, stream=True)
     response.raise_for_status()
 
-    with zipfile.ZipFile(zip_path, 'w') as zf:
+    # Use force_zip64 by setting allowZip64=True
+    with zipfile.ZipFile(zip_path, 'w', allowZip64=True) as zf:
         with zf.open(internal_filename, 'w') as f_in_zip:
             for chunk in response.iter_content(chunk_size=8192):
                 f_in_zip.write(chunk)
