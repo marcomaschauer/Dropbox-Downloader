@@ -43,6 +43,16 @@ def file_rename_if_exists(path):
 
     return path
 
+def extract_filename_from_link(link):
+    """
+    Extract the filename from a Dropbox link.
+    """
+    # Split by '/' and take the last part as the file name
+    filename = link.split('/')[-1]
+    # Remove any query parameters
+    filename = filename.split('?')[0]
+    return filename
+
 def download_from_dropbox(link, zip_path, internal_filename):
     # Ensure the link forces download
     if "?dl=0" in link:
@@ -62,7 +72,7 @@ def download_from_dropbox(link, zip_path, internal_filename):
     print(f"File from {link} downloaded and saved in ZIP archive: {zip_path}.")
 
 if __name__ == "__main__":
-    links = input("Enter the Dropbox links separated by commas: ").split(',')
+    links = input("Enter the Dropbox links separated by spaces: ").split()
 
     # Validate Dropbox links
     for link in links:
@@ -83,5 +93,6 @@ if __name__ == "__main__":
         # Rename file if already exists
         zip_save_path = file_rename_if_exists(zip_save_path)
         
-        internal_name = input(f"Enter the name for the file inside the ZIP for {link}: ")
+        # Automatically determine the internal file name from the Dropbox link
+        internal_name = extract_filename_from_link(link)
         download_from_dropbox(link, zip_save_path, internal_name)
